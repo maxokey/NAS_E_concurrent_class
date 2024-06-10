@@ -1,69 +1,34 @@
 class Foo {
-    volatile int cnt;
+    volatile int count;
     Object o;
 
     public Foo() {
-        cnt = 1;
+        count = 1;
         o = new Object();
     }
 
-    public void first(Runnable printFirst) throws InterruptedException {
-        synchronized (o) {
-            printFirst.run();
-            cnt++;
-            o.notifyAll();
+    void printNth(Runnable printFunction, int expectedCount) throws InterruptedException {
+        synchronized(this){
+            while(count != expectedCount){
+                wait();
+            }
         }
+        printFunction.run();
+        synchronized(this){
+            count = expectedCount + 1;
+            notifyAll();
+        }
+    }
+
+    public void first(Runnable printFirst) throws InterruptedException {
+        printNth(printFirst, 1);
     }
 
     public void second(Runnable printSecond) throws InterruptedException {
-        synchronized (o) {
-            while (cnt < 2) {
-                o.wait();
-            }
-            printSecond.run();
-            cnt++;
-            o.notify();
-        }
+        printNth(printSecond, 2);
     }
 
     public void third(Runnable printThird) throws InterruptedException {
-        synchronized (o) {
-            while (cnt < 3) {
-                o.wait();
-            }
-            printThird.run();
-        }
+        printNth(printThird, 3);
     }
 }
-
-/*
-class Foo {
-    volatile int cnt;
-
-    public Foo() {
-        cnt = 1;
-    }
-
-    public synchronized void first(Runnable printFirst) throws InterruptedException {
-        printFirst.run();
-        cnt++;
-        this.notifyAll();
-    }
-
-    public synchronized void second(Runnable printSecond) throws InterruptedException {
-        while (cnt < 2) {
-            this.wait();
-        }
-        printSecond.run();
-        cnt++;
-        this.notify();
-    }
-
-    public synchronized void third(Runnable printThird) throws InterruptedException {
-        while (cnt < 3) {
-            this.wait();
-        }
-        printThird.run();
-    }
-}
-*/

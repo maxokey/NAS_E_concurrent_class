@@ -2,20 +2,16 @@ class Foo {
     private:
         std::mutex mtx;
         std::condition_variable cv;
-        int count = 0;
-        bool isPrinting = false;
-        
+        int count = 0;        
         void printNth(std::function<void()> printFunction, int expectedCount) {
             {
                 std::unique_lock<std::mutex> lock(mtx);
                 cv.wait(lock, [this, expectedCount]{ return (count == expectedCount) && !isPrinting; });
-                isPrinting = true;
             }
             printFunction();
             {
                 std::unique_lock<std::mutex> lock(mtx);
                 count = expectedCount + 1;
-                isPrinting = false;
                 cv.notify_all();
             }
         }
