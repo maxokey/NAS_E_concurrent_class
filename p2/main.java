@@ -1,3 +1,5 @@
+package p2;
+
 class FooBar {
     private int n;
     private boolean printingBar;
