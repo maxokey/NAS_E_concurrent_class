@@ -1,0 +1,12 @@
+Algorithm: have even phils philosophers up the right fork, then the left one; have odd philosophers pick up the left one, then the right. After both forks have been picked up - eat, then put them both down in any order.
+
+Why this makes progress: each philosopher will pick up both forks, eat, put the forks down, accomplishing eating once; will repeat as many times as necessary. 
+
+Why this avoids deadlocks: assuming that philosophers don't put down a fork unless they've eaten (and our algorithm guarantees that), a deadlock would occur when there is a philosopher that cannot pick up the fork he wants because someone else is holding it forever. A state where there is a philosopher that holds both forks isn't considered deadlock, as the philosopher will eventually eat and put the forks down. 
+Call the fork between philosopher X and philosopher Y an X-Y fork. 3-2 and 1-0 cannot be held forever, because they're the second choice for both their owners, meaning that the owner that picks it up will immediately have a pair, will eat, and will eventually put it down. 
+2-1 is going to be picked up by one of the two owners, and the winner will be able to eventually acquire the second fork by the rule above. Thus neither of those 3 forks will be held forever. 
+0-4 is the first choice for philosopher 0, second for philosopher 4. Since we know that philosopher 0 will eventually get his second choice (1-0), we know he will not hold on to 0-4 fork forever. Philosopher 4 would always eventually release 0-4, as he would only acquire it when he already has his first fork. Thus 0-4 would not be held forever.
+4-3 would be held forever only in the case where the philosopher holding it is waiting on some other fork. Since all other forks will eventually be released, 4-3 would not be held forever.
+The rules above guarantee there will be no deadlocks.
+
+Why this avoids livelocks: Each philosopher performs exactly 5 actions in order to eat once. Forks are never put down unless the philosopher has eaten. The rules above show that new actions will eventually happen. Each action will get one philosopher to make eating progress. No action ever undoes eating progress nor stalls, making no eating progress.
